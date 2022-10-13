@@ -1,4 +1,4 @@
-package com.fansos.miconvert.model.result;
+package com.fansos.miconvert.constant;
 
 public enum ResultCodeEnum {
     /**

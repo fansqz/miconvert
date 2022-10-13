@@ -1,5 +1,6 @@
 package com.fansos.miconvert.model.result;
 
+import com.fansos.miconvert.constant.ResultCodeEnum;
 import lombok.Data;
 
 /**
