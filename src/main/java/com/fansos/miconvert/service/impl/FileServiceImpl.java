@@ -44,19 +44,17 @@ public class FileServiceImpl extends ServiceImpl<FormatMapper, Format> implement
 
 		//获取项目运行的绝对路径
 		String filePath = System.getProperty("user.dir");
+		//todo：统一使用linux的反斜杠 /
 		String newFilePath = filePath + "\\demo-upload\\";
 		File file1 = new File(newFilePath);
 		if (!file1.exists()) {
 			file1.mkdirs();
 		}
 
-		FileOutputStream fileOutputStream = null;
-		try {
-			fileOutputStream = new FileOutputStream(newFilePath + fileName);
+		try (FileOutputStream fileOutputStream = new FileOutputStream(newFilePath + fileName)){
 			fileOutputStream.write(file.getBytes());
 			fileOutputStream.flush();
 			fileOutputStream.close();
-
 			//转换
 			try {
 				if (fileName.split("\\.")[1].equals("pdf")) {
