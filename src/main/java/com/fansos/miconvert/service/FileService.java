@@ -13,18 +13,28 @@ import java.util.List;
  * @create 2022 - 10 - 12 0:07
  */
 public interface FileService extends IService<Format> {
-	/**
-	 * 上传文件
-	 */
+
+
+    /**
+     * 上传文件
+     * @param file
+     * @param toFormat
+     * @return
+     */
 	String upload(MultipartFile file, String toFormat);
 
-	/**
-	 * 下载文件
-	 */
+    /**
+     * 下载文件
+     * @param response
+     * @param fileName
+     * @return
+     */
 	String download(HttpServletResponse response, @PathVariable String fileName);
 
-	/**
-	 * 查询数据库，获取可转换类型
-	 */
+    /**
+     * 查询数据库，获取可转换类型
+     * @param fileName
+     * @return
+     */
 	List<Format> getFormats(String fileName);
 }

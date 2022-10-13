@@ -35,7 +35,8 @@ public class TimingDelUtil implements Runnable {
 	@Override
 	public void run() {
 		try {
-			Thread.sleep(1000 * 60 * 60);//每小时运行一次
+            //每小时运行一次
+			Thread.sleep(1000 * 60 * 60);
 			log.info("开始删除.........");
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
