@@ -101,7 +101,7 @@ public class FileServiceImpl extends ServiceImpl<FormatMapper, Format> implement
 			 */
 			try {
 				response.addHeader("Content-Disposition", "attachment;filename="
-						+ new String(fileName.getBytes("UTF-8"), "ISO8859-1"));
+						+ new String(fileName.split("_")[1].getBytes("UTF-8"), "ISO8859-1"));
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
