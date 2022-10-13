@@ -29,8 +29,9 @@ public class Result<T> implements Cloneable {
 
 	protected static <T> Result<T> build(T data) {
 		Result<T> result = new Result<T>();
-		if (data != null)
-			result.setData(data);
+		if (data != null) {
+            result.setData(data);
+        }
 		return result;
 	}
 

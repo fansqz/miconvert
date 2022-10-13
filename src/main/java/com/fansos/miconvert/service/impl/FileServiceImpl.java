@@ -57,9 +57,7 @@ public class FileServiceImpl extends ServiceImpl<FormatMapper, Format> implement
 			fileOutputStream.flush();
 			fileOutputStream.close();
 
-			/**
-			 * 转换
-			 */
+			//转换
 			try {
 				if (fileName.split("\\.")[1].equals("pdf")) {
 					ConvertUtil.pdf2docxConvert(newFilePath, toFormat);
@@ -96,9 +94,7 @@ public class FileServiceImpl extends ServiceImpl<FormatMapper, Format> implement
 			String fileSuffix = fileName.substring(fileName.lastIndexOf(".") + 1);
 			response.setContentType("application/" + fileSuffix);
 
-			/**
-			 * 添加http头信息
-			 */
+			//添加http头信息
 			try {
 				response.addHeader("Content-Disposition", "attachment;filename="
 						+ new String(fileName.split("_")[1].getBytes("UTF-8"), "ISO8859-1"));
@@ -106,9 +102,7 @@ public class FileServiceImpl extends ServiceImpl<FormatMapper, Format> implement
 				e.printStackTrace();
 			}
 
-			/**
-			 * 使用  Path 和response输出流将文件输出到浏览器
-			 */
+			//使用  Path 和response输出流将文件输出到浏览器
 			try {
 				Files.copy(path, response.getOutputStream());
 			} catch (IOException e) {
