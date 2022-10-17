@@ -41,11 +41,11 @@ public class FileServiceImpl extends ServiceImpl<FormatMapper, Format> implement
 		//生成随机唯一值，使用uuid，添加到文件名称里面
 		String uuid = UUID.randomUUID().toString().replaceAll("-", "") + "_";
 		fileName = uuid + fileName;
-
+		String suffix = fileName.split("\\.")[1];
+		String preffix = fileName.split("\\.")[0];
 		//获取项目运行的绝对路径
 		String filePath = System.getProperty("user.dir");
-		//todo：统一使用linux的反斜杠 /
-		String newFilePath = filePath + "\\demo-upload\\";
+		String newFilePath = filePath + "/demo-upload/";
 		File file1 = new File(newFilePath);
 		if (!file1.exists()) {
 			file1.mkdirs();
@@ -57,8 +57,8 @@ public class FileServiceImpl extends ServiceImpl<FormatMapper, Format> implement
 			fileOutputStream.close();
 			//转换
 			try {
-			    //todo：通过数据库获取工具的选择方案
-				if (fileName.split("\\.")[1].equals("pdf")) {
+			    //通过数据库获取工具的选择方案
+				if (suffix.equals("pdf")) {
 					ConvertUtil.pdf2docxConvert(newFilePath, toFormat);
 				} else {
 					ConvertUtil.sofficeConvert(newFilePath + fileName, toFormat, newFilePath);
@@ -69,8 +69,8 @@ public class FileServiceImpl extends ServiceImpl<FormatMapper, Format> implement
 				thread.start();
 				log.info("定时删除文件线程启动.........");
 			}
-			log.info("localhost:8080/fans/convert/download/" + fileName);
-			return "localhost:8080/fans/convert/download/" + fileName;
+			log.info("localhost:8080/convert/downloadFile/" + preffix + ".pdf");
+			return "localhost:8080/convert/downloadFile/" + preffix + ".pdf";
 			// return Result.ok();
 		} catch (java.io.IOException e) {
 			e.printStackTrace();
