@@ -43,7 +43,7 @@ public class FileServiceImpl extends ServiceImpl<FormatMapper, Format> implement
 		fileName = uuid + fileName;
 		String suffix = fileName.split("\\.")[1];
 		String preffix = fileName.split("\\.")[0];
-		//获取项目运行的绝对路径
+		//获取项目运行的绝对路径，统一用 "/"
 		String filePath = System.getProperty("user.dir");
 		String newFilePath = filePath + "/demo-upload/";
 		File file1 = new File(newFilePath);

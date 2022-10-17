@@ -57,7 +57,7 @@ public class FileController {
 
 
 	/**
-	 * 文件下载
+	 * 文件下载{}
 	 * 通过response输出流将文件传递到浏览器
 	 * @param response
 	 */
