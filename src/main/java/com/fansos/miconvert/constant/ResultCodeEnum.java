@@ -7,7 +7,9 @@ public enum ResultCodeEnum {
     CUSTOM_SIMPLE_ERROR_MESSAGE(1, "自定义错误消息(不需要用户确定,过几秒后消失)"),
     SUCCESS(200, "响应成功"),
     FAIL(201, "失败"),
-    ERROR(500, "服务器错误");
+    ERROR(500, "服务器错误"),
+    TOKEN_ERROR(205, "token错误");
+
 
 
     private Integer code;
