@@ -63,7 +63,7 @@ public class SystemController {
 		try {
 			LoginInfo info = systemService.getInfoByName(loginInfo.getUsername());
 
-			if (null != info ) {
+			if (null != info && info.getPassword().equals(loginInfo.getPassword())) {
 				// 用户的类型和用户id转换成一个密文，用token的名称向客户端反馈
 				String token = JwtHelper.createToken(info.getUserId().longValue(), info.getUsername());
 				map.put("token", token);
