@@ -18,7 +18,6 @@ public class ConvertUtil {
 	private static String getTitleCommand(String type) {
 		String osName = System.getProperty("os.name");
 		String titleCommand = "";
-
 		if (Pattern.matches("Linux.*", osName)) {
 			//Todo
 			titleCommand = "";

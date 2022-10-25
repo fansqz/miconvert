@@ -1,5 +1,6 @@
 package com.fansos.miconvert.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fansos.miconvert.mapper.FormatMapper;
 import com.fansos.miconvert.mapper.LoginInfoMapper;
@@ -18,13 +19,14 @@ public class SystemServiceImpl extends ServiceImpl<LoginInfoMapper, LoginInfo> i
 
 	/**
 	 * 查询数据库，获取用户
-	 * @param loginInfo
+	 * @param userName
 	 * @return
 	 */
 	@Override
-	public LoginInfo login(LoginInfo loginInfo) {
-
-
-		return null;
+	public LoginInfo getInfoByName(String userName) {
+		QueryWrapper<LoginInfo> wrapper = new QueryWrapper<>();
+		wrapper.eq("userName", userName);
+		LoginInfo loginInfo = baseMapper.selectOne(wrapper);
+		return loginInfo;
 	}
 }

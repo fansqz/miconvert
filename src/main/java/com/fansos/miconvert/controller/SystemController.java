@@ -8,7 +8,6 @@ import com.fansos.miconvert.service.SystemService;
 import com.fansos.miconvert.utils.CreateVerifiCodeImage;
 import com.fansos.miconvert.utils.JwtHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,12 +61,11 @@ public class SystemController {
 
 
 		try {
-			LoginInfo Info = systemService.login(loginInfo);
+			LoginInfo info = systemService.getInfoByName(loginInfo.getUsername());
 
-			if (null != Info) {
-
+			if (null != info ) {
 				// 用户的类型和用户id转换成一个密文，用token的名称向客户端反馈
-				String token = JwtHelper.createToken(Info.getUserId().longValue(), Info.getUsername());
+				String token = JwtHelper.createToken(info.getUserId().longValue(), info.getUsername());
 				map.put("token", token);
 			} else {
 				throw new RuntimeException("用户名或密码错误");

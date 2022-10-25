@@ -11,8 +11,8 @@ import com.fansos.miconvert.model.pojo.LoginInfo;
 public interface SystemService extends IService<LoginInfo> {
 	/**
 	 * 查询数据库，获取用户
-	 * @param loginInfo
+	 * @param userName
 	 * @return
 	 */
-	LoginInfo login(LoginInfo loginInfo);
+	LoginInfo getInfoByName(String userName);
 }
