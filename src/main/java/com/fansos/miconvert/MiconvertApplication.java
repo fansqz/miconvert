@@ -7,23 +7,18 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
-// @ServletComponentScan(basePackages = "com.fansos.miconvert.filter")
 @SpringBootApplication
 @MapperScan("com.fansos.miconvert.mapper")
+@EnableWebSecurity
+@ComponentScan("com.fansos.miconvert.config")
 public class MiconvertApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(MiconvertApplication.class, args);
     }
-    // /**
-    //  * Spring Security权限认证框架 封装的密码加密工具类
-    //  *
-    //  * @return
-    //  */
-    // @Bean
-    // public BCryptPasswordEncoder getBCryptPasswordEncoder(){
-    //     return new BCryptPasswordEncoder();
-    // }
+
 }
