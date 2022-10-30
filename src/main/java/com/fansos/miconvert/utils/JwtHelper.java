@@ -14,24 +14,32 @@ public class JwtHelper {
     private static String tokenSignKey = "123456";
 
     //生成token字符串
-    public static String createToken(String userName, String email) {
+    public static String createToken(Long userId, String userName, String email) {
         String token = Jwts.builder()
 
                 .setSubject("YYGH-USER")
 
                 .setExpiration(new Date(System.currentTimeMillis() + tokenExpiration))
 
+                .claim("id", userId)
                 .claim("email", email)
-                .claim("userType", userName)
+                .claim("userName", userName)
 
                 .signWith(SignatureAlgorithm.HS512, tokenSignKey)
                 .compressWith(CompressionCodecs.GZIP)
                 .compact();
         return token;
     }
+    //从token字符串获取id
+    public static Long getUserId(String token) {
+        if(StringUtils.isEmpty(token)) return -1L;
+        Jws<Claims> claimsJws
+                = Jwts.parser().setSigningKey(tokenSignKey).parseClaimsJws(token);
+        Claims claims = claimsJws.getBody();
+        return (Long) claims.get("id");
+    }
 
-
-    //从token字符串获取userName
+    //从token字符串获取email
     public static String getUserEmail(String token) {
         if(StringUtils.isEmpty(token)) return "";
         Jws<Claims> claimsJws
@@ -80,7 +88,7 @@ public class JwtHelper {
                     .setSigningKey(tokenSignKey)
                     .parseClaimsJws(token)
                     .getBody();
-            refreshedToken = JwtHelper.createToken(getUserEmail(token), getUserName(token));
+            refreshedToken = JwtHelper.createToken(getUserId(token), getUserEmail(token), getUserName(token));
         } catch (Exception e) {
             refreshedToken = null;
         }

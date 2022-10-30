@@ -15,7 +15,10 @@ public interface SystemService extends IService<UserInfo> {
 	 */
 	UserInfo getInfoByName(String userName);
 
-
-
-
+	/**
+	 *
+	 * @param newUser
+	 * @return
+	 */
+	UserInfo saveUser(UserInfo newUser);
 }

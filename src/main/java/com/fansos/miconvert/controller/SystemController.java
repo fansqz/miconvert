@@ -1,22 +1,14 @@
 package com.fansos.miconvert.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.fansos.miconvert.constant.ResultCodeEnum;
 import com.fansos.miconvert.model.pojo.UserInfo;
 import com.fansos.miconvert.model.result.Result;
 import com.fansos.miconvert.service.RedisService;
 import com.fansos.miconvert.service.SystemService;
-import com.fansos.miconvert.utils.CreateVerifiCodeImage;
 import com.fansos.miconvert.utils.JwtHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -57,11 +49,13 @@ public class SystemController {
 		newUser.setPassword(password);
 		newUser.setEmail(email);
 
+
 		// 将注册用户信息写进数据库
-		systemService.save(newUser);
+		UserInfo saveUser = systemService.saveUser(newUser);
+
 
 		// 用户的名和用户email转换成一个密文，用token的名称向客户端反馈
-		String token = JwtHelper.createToken(userName, email);
+		String token = JwtHelper.createToken((long) saveUser.getUserId(), userName, email);
 
 		return Result.ok(token);
 	}
@@ -97,7 +91,7 @@ public class SystemController {
 
 			if (null != info && info.getPassword().equals(loginInfo.getPassword())) {
 				// 用户的类型和用户id转换成一个密文，用token的名称向客户端反馈
-				String token = JwtHelper.createToken(info.getEmail(), info.getUsername());
+				String token = JwtHelper.createToken((long) info.getUserId(), info.getEmail(), info.getUsername());
 				redisService.set(token, loginInfo.getUsername());
 				map.put("token", token);
 			} else {
