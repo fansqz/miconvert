@@ -1,5 +1,6 @@
 package com.fansos.miconvert.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fansos.miconvert.constant.ResultCodeEnum;
 import com.fansos.miconvert.model.pojo.UserInfo;
 import com.fansos.miconvert.model.result.Result;
@@ -8,6 +9,7 @@ import com.fansos.miconvert.service.SystemService;
 import com.fansos.miconvert.utils.CreateVerifiCodeImage;
 import com.fansos.miconvert.utils.JwtHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
@@ -33,8 +35,8 @@ public class SystemController {
 	@Autowired
 	private RedisService redisService;
 
-	// @Autowired
-	// private BCryptPasswordEncoder passwordEncoder;
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 
 	/**
 	 * 用户注册
@@ -127,41 +129,41 @@ public class SystemController {
 		return Result.ok("注销成功！");
 	}
 
-	// /**
-	//  * 修改用户密码
-	//  * @param token
-	//  * @param oldPwd
-	//  * @param newPwd
-	//  * @return
-	//  */
-	// @PostMapping("/updatePwd/{oldPwd}/{newPwd}")
-	// public Result updatePwd(@RequestHeader("token") String token,
-	//                         @PathVariable("oldPwd") String oldPwd,
-	//                         @PathVariable("newPwd") String newPwd) {
-	// 	boolean isvalid = JwtHelper.isExpiration(token);
-	// 	if (isvalid) {
-	// 		//token过期
-	// 		return Result.fail().message("token失效!");
-	// 	}
-	// 	//通过token获取当前登录的用户id
-	// 	String email = JwtHelper.getUserEmail(token);
-	// 	//通过token获取当前登录的用户名称
-	// 	String userName = JwtHelper.getUserName(token);
-	// 	// 将明文密码转换为暗文
-	// 	oldPwd = passwordEncoder.encode(oldPwd);
-	// 	newPwd = passwordEncoder.encode(newPwd);
-	//
-	// 	QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
-	// 	queryWrapper.eq("username",userName).eq("password", oldPwd);
-	// 	UserInfo userInfo = systemService.getOne(queryWrapper);
-	// 	if (null != userInfo) {
-	// 		userInfo.setPassword(newPwd);
-	// 		systemService.saveOrUpdate(userInfo);
-	// 	} else {
-	// 		return Result.fail().message("原密码输入有误！");
-	// 	}
-	// 	return Result.ok();
-	// }
+	/**
+	 * 修改用户密码
+	 * @param token
+	 * @param oldPwd
+	 * @param newPwd
+	 * @return
+	 */
+	@PostMapping("/updatePwd/{oldPwd}/{newPwd}")
+	public Result updatePwd(@RequestHeader("token") String token,
+	                        @PathVariable("oldPwd") String oldPwd,
+	                        @PathVariable("newPwd") String newPwd) {
+		boolean isvalid = JwtHelper.isExpiration(token);
+		if (isvalid) {
+			//token过期
+			return Result.fail().message("token失效!");
+		}
+		//通过token获取当前登录的用户id
+		String email = JwtHelper.getUserEmail(token);
+		//通过token获取当前登录的用户名称
+		String userName = JwtHelper.getUserName(token);
+		// 将明文密码转换为暗文
+		oldPwd = passwordEncoder.encode(oldPwd);
+		newPwd = passwordEncoder.encode(newPwd);
+
+		QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
+		queryWrapper.eq("username",userName).eq("password", oldPwd);
+		UserInfo userInfo = systemService.getOne(queryWrapper);
+		if (null != userInfo) {
+			userInfo.setPassword(newPwd);
+			systemService.saveOrUpdate(userInfo);
+		} else {
+			return Result.fail().message("原密码输入有误！");
+		}
+		return Result.ok();
+	}
 
 
 	/**
