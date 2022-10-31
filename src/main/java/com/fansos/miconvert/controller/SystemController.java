@@ -4,16 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fansos.miconvert.constant.ResultCodeEnum;
 import com.fansos.miconvert.model.pojo.UserInfo;
 import com.fansos.miconvert.model.result.Result;
-
 import com.fansos.miconvert.service.SystemService;
-
 import com.fansos.miconvert.utils.CreateVerifiCodeImage;
 import com.fansos.miconvert.utils.JwtHelper;
-import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-// import org.springframework.security.core.token.TokenService;
-// import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -43,8 +39,8 @@ public class SystemController {
 	@Resource
 	private RedisTemplate redisTemplate;
 
-	// @Autowired
-	// private BCryptPasswordEncoder passwordEncoder;
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 
 	@GetMapping("/test")
 	public void test () {
@@ -167,8 +163,8 @@ public class SystemController {
 		//通过token获取当前登录的用户名称
 		String userName = JwtHelper.getUserName(token);
 		// 将明文密码转换为暗文
-		// oldPwd = passwordEncoder.encode(oldPwd);
-		// newPwd = passwordEncoder.encode(newPwd);
+		oldPwd = passwordEncoder.encode(oldPwd);
+		newPwd = passwordEncoder.encode(newPwd);
 
 		QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
 		queryWrapper.eq("username",userName).eq("password", oldPwd);
