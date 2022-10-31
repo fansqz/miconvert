@@ -4,11 +4,15 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fansos.miconvert.constant.ResultCodeEnum;
 import com.fansos.miconvert.model.pojo.UserInfo;
 import com.fansos.miconvert.model.result.Result;
-import com.fansos.miconvert.service.RedisService;
+
 import com.fansos.miconvert.service.SystemService;
+
 import com.fansos.miconvert.utils.CreateVerifiCodeImage;
 import com.fansos.miconvert.utils.JwtHelper;
+import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.token.TokenService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -26,6 +31,7 @@ import java.util.Map;
  * @create 2022 - 10 - 23 20:37
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/system")
 public class SystemController {
 
@@ -33,11 +39,16 @@ public class SystemController {
 	private SystemService systemService;
 
 	@Autowired
-	private RedisService redisService;
+	private RedisTemplate redisTemplate;
 
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 
+	@GetMapping("/test")
+	public void test () {
+		System.out.println("testing ... ");
+		System.out.println("你好年后1。。。");
+	}
 	/**
 	 * 用户注册
 	 * @param userName
@@ -65,6 +76,8 @@ public class SystemController {
 
 		// 用户的名和用户email转换成一个密文，用token的名称向客户端反馈
 		String token = JwtHelper.createToken((long) saveUser.getUserId(), userName, email);
+		redisTemplate.opsForValue().set(token, saveUser.getUserId());
+		redisTemplate.opsForValue().getAndExpire(token, JwtHelper.getTokenExpiration());
 
 		return Result.ok(token);
 	}
@@ -101,7 +114,8 @@ public class SystemController {
 			if (null != info && info.getPassword().equals(loginInfo.getPassword())) {
 				// 用户的类型和用户id转换成一个密文，用token的名称向客户端反馈
 				String token = JwtHelper.createToken((long) info.getUserId(), info.getEmail(), info.getUsername());
-				redisService.set(token, loginInfo.getUsername());
+				redisTemplate.opsForValue().set(token, info.getUserId());
+				redisTemplate.opsForValue().getAndExpire(token, JwtHelper.getTokenExpiration());
 				map.put("token", token);
 			} else {
 				throw new RuntimeException("用户名或密码错误");
@@ -122,7 +136,8 @@ public class SystemController {
 	@GetMapping("/logout")
 	public Result logout(HttpServletRequest request) {
 		String token = request.getHeader("token");
-		Boolean delete = redisService.delete(token);
+		// Boolean delete = tokenService.deleteRedisKey(token);
+		boolean delete = (boolean) redisTemplate.opsForValue().getAndDelete(token);
 		if (!delete) {
 			return Result.fail("注销失败，请检查是否登录！");
 		}

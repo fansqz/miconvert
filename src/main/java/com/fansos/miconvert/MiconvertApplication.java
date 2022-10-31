@@ -20,5 +20,11 @@ public class MiconvertApplication {
     public static void main(String[] args) {
         SpringApplication.run(MiconvertApplication.class, args);
     }
-
+    /*
+     * 注入BCryptPasswordEncoder
+     */
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }

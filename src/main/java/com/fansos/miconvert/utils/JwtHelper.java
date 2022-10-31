@@ -7,12 +7,16 @@ package com.fansos.miconvert.utils;
 import io.jsonwebtoken.*;
 import org.springframework.util.StringUtils;
 
+import java.time.Duration;
 import java.util.Date;
 
 public class JwtHelper {
     private static long tokenExpiration = 24*60*60*1000;
     private static String tokenSignKey = "123456";
 
+    public static Duration getTokenExpiration() {
+        return Duration.ofSeconds(24*60*60*1000);
+    }
     //生成token字符串
     public static String createToken(Long userId, String userName, String email) {
         String token = Jwts.builder()
@@ -30,6 +34,7 @@ public class JwtHelper {
                 .compact();
         return token;
     }
+
     //从token字符串获取id
     public static Long getUserId(String token) {
         if(StringUtils.isEmpty(token)) return -1L;
