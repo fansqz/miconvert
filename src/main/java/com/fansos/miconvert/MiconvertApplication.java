@@ -9,12 +9,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+// import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+// import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
 @SpringBootApplication
 @MapperScan("com.fansos.miconvert.mapper")
 @EnableWebSecurity
-@ComponentScan("com.fansos.miconvert.config")
+// @ComponentScan("com.fansos.miconvert.config") // 拦截时404的原因
 public class MiconvertApplication {
 
     public static void main(String[] args) {

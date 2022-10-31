@@ -44,13 +44,15 @@ public class AuthConfig implements WebMvcConfigurer {
 	public void addInterceptors(InterceptorRegistry registry) {
 		String[] addPathPatterns ={
 				//输入要拦截路径
-				"/system/**",   //拦截所有路径 ，之后再决定放行
-				"convert/**"
+				// "/system/**",   //拦截所有路径 ，之后再决定放行
+				// "convert/**"
+				"/**"
 		};
 		//定义排除放行内容
 		//要排除路径，排除的路径说明不需要用户登录也可以访问
 		String[] excludePathPatterns={
 				"/system/login",  //排除掉登录页面
+				"/system/register",
 				"/system/test",
 				"convert/test"
 		};

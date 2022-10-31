@@ -12,10 +12,11 @@ import com.fansos.miconvert.utils.JwtHelper;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.core.token.TokenService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+// import org.springframework.security.core.token.TokenService;
+// import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Diligence
@@ -38,11 +40,11 @@ public class SystemController {
 	@Autowired
 	private SystemService systemService;
 
-	@Autowired
+	@Resource
 	private RedisTemplate redisTemplate;
 
-	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
+	// @Autowired
+	// private BCryptPasswordEncoder passwordEncoder;
 
 	@GetMapping("/test")
 	public void test () {
@@ -77,7 +79,7 @@ public class SystemController {
 		// 用户的名和用户email转换成一个密文，用token的名称向客户端反馈
 		String token = JwtHelper.createToken((long) saveUser.getUserId(), userName, email);
 		redisTemplate.opsForValue().set(token, saveUser.getUserId());
-		redisTemplate.opsForValue().getAndExpire(token, JwtHelper.getTokenExpiration());
+		redisTemplate.expire(token, JwtHelper.getTokenExpiration(), TimeUnit.SECONDS);
 
 		return Result.ok(token);
 	}
@@ -115,7 +117,7 @@ public class SystemController {
 				// 用户的类型和用户id转换成一个密文，用token的名称向客户端反馈
 				String token = JwtHelper.createToken((long) info.getUserId(), info.getEmail(), info.getUsername());
 				redisTemplate.opsForValue().set(token, info.getUserId());
-				redisTemplate.opsForValue().getAndExpire(token, JwtHelper.getTokenExpiration());
+				redisTemplate.opsForValue().getAndExpire(token, JwtHelper.getTokenExpiration(), TimeUnit.SECONDS);
 				map.put("token", token);
 			} else {
 				throw new RuntimeException("用户名或密码错误");
@@ -165,8 +167,8 @@ public class SystemController {
 		//通过token获取当前登录的用户名称
 		String userName = JwtHelper.getUserName(token);
 		// 将明文密码转换为暗文
-		oldPwd = passwordEncoder.encode(oldPwd);
-		newPwd = passwordEncoder.encode(newPwd);
+		// oldPwd = passwordEncoder.encode(oldPwd);
+		// newPwd = passwordEncoder.encode(newPwd);
 
 		QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
 		queryWrapper.eq("username",userName).eq("password", oldPwd);

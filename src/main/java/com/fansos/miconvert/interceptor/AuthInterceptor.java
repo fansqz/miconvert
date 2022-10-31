@@ -34,6 +34,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 			return false;
 		}
 		Object loginStatus = redisTemplate.opsForValue().get(token);
+		System.out.println("拦截器，去查redis啦。。。");
 		if( Objects.isNull(loginStatus)){
 			response.getWriter().print("token错误，请查看！");
 			return false;

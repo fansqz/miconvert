@@ -31,7 +31,7 @@ public class SystemServiceImpl extends ServiceImpl<LoginInfoMapper, UserInfo> im
 	public UserInfo saveUser(UserInfo newUser) {
 		baseMapper.insert(newUser);
 		QueryWrapper<UserInfo> wrapper = new QueryWrapper<>();
-		wrapper.eq("userName", newUser.getUsername());
+		wrapper.eq("username", newUser.getUsername());
 		return baseMapper.selectOne(wrapper);
 	}
 }
