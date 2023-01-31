@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 
 /**
+ * 用户拦截
  * @author Diligence
  * @create 2022 - 10 - 30 14:51
  */
@@ -32,21 +33,10 @@ public class AuthInterceptor implements HandlerInterceptor {
 			return false;
 		}
 		Object loginStatus = redisTemplate.opsForValue().get(token);
-		System.out.println("拦截器，去查redis啦。。。");
 		if( Objects.isNull(loginStatus)){
 			response.getWriter().print("token错误，请查看！");
 			return false;
 		}
 		return true;
-	}
-
-	@Override
-	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-
-	}
-
-	@Override
-	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-
 	}
 }

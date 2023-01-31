@@ -42,11 +42,6 @@ public class SystemController {
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 
-	@GetMapping("/test")
-	public void test () {
-		System.out.println("testing ... ");
-		System.out.println("你好年后1。。。");
-	}
 	/**
 	 * 用户注册
 	 * @param userName

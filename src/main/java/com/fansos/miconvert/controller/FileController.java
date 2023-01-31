@@ -19,17 +19,11 @@ import java.util.List;
 @Controller
 @CrossOrigin
 @ResponseBody
-@RequestMapping("convert/")
+@RequestMapping("/convert")
 public class FileController {
 
 	@Autowired
 	private FileService fileService;
-
-	@GetMapping("/test")
-	public void test () {
-		System.out.println("testing ... ");
-		System.out.println("你好年后。。。");
-	}
 
 	/**
 	 * 查询数据库，获取可转换类型
