@@ -12,7 +12,7 @@ import java.util.List;
  * @author Diligence
  * @create 2022 - 10 - 12 0:07
  */
-public interface FileService extends IService<Format> {
+public interface ConvertService{
 
 
     /**
@@ -31,10 +31,4 @@ public interface FileService extends IService<Format> {
      */
 	String download(HttpServletResponse response, @PathVariable String fileName);
 
-    /**
-     * 查询数据库，获取可转换类型
-     * @param fileName
-     * @return
-     */
-	List<Format> getFormats(String fileName);
 }

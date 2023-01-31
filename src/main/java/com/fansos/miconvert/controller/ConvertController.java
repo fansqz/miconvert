@@ -2,15 +2,13 @@ package com.fansos.miconvert.controller;
 
 
 import com.fansos.miconvert.constant.ResultCodeEnum;
-import com.fansos.miconvert.model.pojo.Format;
 import com.fansos.miconvert.model.result.Result;
-import com.fansos.miconvert.service.FileService;
+import com.fansos.miconvert.service.ConvertService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 /**
  * 游客相关的转换的Controller
@@ -25,22 +23,12 @@ import java.util.List;
 public class ConvertController {
 
     @Autowired
-    private FileService fileService;
-
-    /**
-     * 查询数据库，获取可转换类型
-     * @return
-     */
-    @GetMapping("/getSupportFormat")
-    public Result<?> getFormat(@RequestParam("fileName") String fileName) {
-        List<Format> formats = fileService.getFormats(fileName);
-        return Result.ok(formats);
-    }
+    private ConvertService convertService;
 
     /**
      * 上传文件
-     * @param file
-     * @return
+     * @param file 文件
+     * @return 成功信息
      */
     @PostMapping("/convertFile")
     public Result<?> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("toFormat") String toFormat) {
@@ -51,7 +39,7 @@ public class ConvertController {
             return Result.fail(ResultCodeEnum.CUSTOM_SIMPLE_ERROR_MESSAGE);
         }
 
-        String url = fileService.upload(file, toFormat);
+        String url = convertService.upload(file, toFormat);
 
         return Result.ok(url);
     }
@@ -60,11 +48,10 @@ public class ConvertController {
     /**
      * 文件下载{}
      * 通过response输出流将文件传递到浏览器
-     * @param response
+     * @param response 下载文件
      */
     @GetMapping("/downloadFile/{fileName}")
-    public Result<?> download(HttpServletResponse response, @PathVariable String fileName) {
-        fileService.download(response, fileName);
-        return Result.ok();
+    public void download(HttpServletResponse response, @PathVariable String fileName) {
+        convertService.download(response, fileName);
     }
 }

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  * @create 2022 - 10 - 23 20:45
  */
 @Service
-public class SystemServiceImpl extends ServiceImpl<LoginInfoMapper, UserInfo> implements SystemService {
+public class UserServiceImpl extends ServiceImpl<LoginInfoMapper, UserInfo> implements SystemService {
 
 	/**
 	 * 查询数据库，获取用户

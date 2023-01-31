@@ -4,15 +4,18 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fansos.miconvert.mapper.FormatMapper;
 import com.fansos.miconvert.model.pojo.Format;
-import com.fansos.miconvert.service.FileService;
+import com.fansos.miconvert.service.ConvertService;
+import com.fansos.miconvert.service.FormatService;
 import com.fansos.miconvert.utils.ConstantPropertiesUtil;
 import com.fansos.miconvert.utils.ConvertUtil;
 import com.fansos.miconvert.utils.TimingDelUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.ws.soap.Addressing;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,7 +32,10 @@ import java.util.UUID;
  */
 @Service
 @Slf4j
-public class FileServiceImpl extends ServiceImpl<FormatMapper, Format> implements FileService {
+public class ConvertServiceImpl implements ConvertService {
+
+	@Autowired
+	private FormatService formatService;
 	/**
 	 * 上传文件
 	 * @param file
@@ -111,16 +117,5 @@ public class FileServiceImpl extends ServiceImpl<FormatMapper, Format> implement
 		return null;
 	}
 
-	/**
-	 * 查询数据库，获取可转换类型
-	 * @return
-	 */
-	@Override
-	public List<Format> getFormats(String fileName) {
-		String suffix = fileName.split("\\.")[1];
-		QueryWrapper<Format> wrapper = new QueryWrapper<>();
-		wrapper.eq("in_format", suffix);
-		List<Format> formats = baseMapper.selectList(wrapper);
-		return formats;
-	}
+
 }
