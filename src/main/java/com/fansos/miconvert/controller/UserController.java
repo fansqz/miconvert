@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -31,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @CrossOrigin
 @RequestMapping("/system")
-public class SystemController {
+public class UserController {
 
 	@Autowired
 	private SystemService systemService;
