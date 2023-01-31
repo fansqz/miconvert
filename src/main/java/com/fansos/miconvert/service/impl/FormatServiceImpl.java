@@ -14,14 +14,26 @@ public class FormatServiceImpl extends ServiceImpl<FormatMapper, Format> impleme
 
     /**
      * 查询数据库，获取可转换类型
-     * @return
+     * @return 类型列表
      */
     @Override
     public List<Format> getFormats(String fileName) {
         String suffix = fileName.split("\\.")[1];
         QueryWrapper<Format> wrapper = new QueryWrapper<>();
         wrapper.eq("in_format", suffix);
-        List<Format> formats = baseMapper.selectList(wrapper);
-        return formats;
+        return baseMapper.selectList(wrapper);
     }
+
+    @Override
+    public List<Format> listAllOutputFormat() {
+        return baseMapper.selectList(null);
+    }
+
+    @Override
+    public List<Format> listInputFormatByOutputFormat(String outputFormat) {
+        QueryWrapper<Format> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("out_format", outputFormat);
+        return baseMapper.selectList(queryWrapper);
+    }
+
 }

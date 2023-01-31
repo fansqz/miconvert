@@ -4,6 +4,7 @@ package com.fansos.miconvert.controller;
 import com.fansos.miconvert.constant.ResultCodeEnum;
 import com.fansos.miconvert.model.result.Result;
 import com.fansos.miconvert.service.ConvertService;
+import com.fansos.miconvert.service.FormatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,25 @@ public class ConvertController {
 
     @Autowired
     private ConvertService convertService;
+
+    @Autowired
+    private FormatService formatService;
+
+    /**
+     * 获取所有的输出格式
+     */
+    @GetMapping("/listAllOutputFormat")
+    public Result<?> ListAllOutputFormat() {
+        return Result.ok(formatService.listAllOutputFormat());
+    }
+
+    /**
+     * 通过输出格式获取输入格式列表
+     */
+    @GetMapping("/listInputFormatByOutputFormat")
+    public Result<?> ListInputFormatByOutputFormat(@RequestParam("format") String format) {
+        return Result.ok(formatService.listInputFormatByOutputFormat(format));
+    }
 
     /**
      * 上传文件
@@ -46,7 +66,7 @@ public class ConvertController {
 
 
     /**
-     * 文件下载{}
+     * 文件下载
      * 通过response输出流将文件传递到浏览器
      * @param response 下载文件
      */
