@@ -3,6 +3,7 @@ package com.fansos.miconvert.utils;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -18,16 +19,10 @@ public class ConvertUtil {
 	private static String getTitleCommand(String type) {
 		String osName = System.getProperty("os.name");
 		String titleCommand = "";
-		if (Pattern.matches("Linux.*", osName)) {
-			//Todo
-			titleCommand = "";
-
-		} else if (Pattern.matches("Windows.*", osName)) {
-			if (type == "soffice") {
-				titleCommand = "soffice";
-			} else if (type == "pdf2docx") {
-				titleCommand = "pdf2docx";
-			}
+		if (Objects.equals(type, "soffice")) {
+			titleCommand = "soffice";
+		} else if (Objects.equals(type, "pdf2docx")) {
+			titleCommand = "pdf2docx";
 		}
 		return titleCommand;
 	}

@@ -51,7 +51,7 @@ public class ConvertController {
      * @return 成功信息
      */
     @PostMapping("/convertFile")
-    public Result<?> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("toFormat") String toFormat) {
+    public Result<?> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("outputFormat") String toFormat) {
         if (file.isEmpty()) {
             return Result.fail(ResultCodeEnum.CUSTOM_SIMPLE_ERROR_MESSAGE);
         }

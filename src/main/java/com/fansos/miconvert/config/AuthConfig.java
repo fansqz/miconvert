@@ -54,7 +54,7 @@ public class AuthConfig implements WebMvcConfigurer {
 				"/system/login",  //排除掉登录页面
 				"/system/register",
 				"/system/test",
-				"convert/test"
+				"/convert/**"
 		};
 		registry.addInterceptor(initAuthInterceptor())
 				.addPathPatterns(addPathPatterns)

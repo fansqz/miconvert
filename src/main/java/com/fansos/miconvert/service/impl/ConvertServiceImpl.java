@@ -75,8 +75,8 @@ public class ConvertServiceImpl implements ConvertService {
 				thread.start();
 				log.info("定时删除文件线程启动.........");
 			}
-			log.info("localhost:8080/convert/downloadFile/" + preffix + ".pdf");
-			return "localhost:8080/convert/downloadFile/" + preffix + ".pdf";
+			log.info("localhost:8080/convert/downloadFile/" + preffix + "." + toFormat);
+			return "localhost:8080/convert/downloadFile/" + preffix + "." + toFormat;
 			// return Result.ok();
 		} catch (java.io.IOException e) {
 			e.printStackTrace();
@@ -91,30 +91,37 @@ public class ConvertServiceImpl implements ConvertService {
 	 * @return
 	 */
 	@Override
-	public String download(HttpServletResponse response, String fileName) {
-		Path path = Paths.get(ConstantPropertiesUtil.UPLOAD_SAVE_PATH, fileName);
-
-		if (Files.exists(path)) {
-			//获取文件的后缀名
-			String fileSuffix = fileName.substring(fileName.lastIndexOf(".") + 1);
-			response.setContentType("application/" + fileSuffix);
-
-			//添加http头信息
-			try {
-				response.addHeader("Content-Disposition", "attachment;filename="
-						+ new String(fileName.split("_")[1].getBytes("UTF-8"), "ISO8859-1"));
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-
-			//使用  Path 和response输出流将文件输出到浏览器
-			try {
-				Files.copy(path, response.getOutputStream());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+	public void download(HttpServletResponse response, String fileName) {
+		String filePath = System.getProperty("user.dir");
+		String newFilePath = filePath + "/demo-upload/";
+		File file1 = new File(newFilePath);
+		if (!file1.exists()) {
+			file1.mkdirs();
 		}
-		return null;
+		Path path = Paths.get(newFilePath, fileName);
+
+		if (!Files.exists(path)) {
+			throw new RuntimeException("文件不存在");
+		}
+		//获取文件的后缀名
+		String fileSuffix = fileName.substring(fileName.lastIndexOf(".") + 1);
+		response.setContentType("application/" + fileSuffix);
+
+		//添加http头信息
+		try {
+			response.addHeader("Content-Disposition", "attachment;filename="
+					+ new String(fileName.split("_")[1].getBytes("UTF-8"), "ISO8859-1"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+		//使用  Path 和response输出流将文件输出到浏览器
+		try {
+			Files.copy(path, response.getOutputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 

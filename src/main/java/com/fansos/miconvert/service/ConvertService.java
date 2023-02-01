@@ -29,6 +29,6 @@ public interface ConvertService{
      * @param fileName
      * @return
      */
-	String download(HttpServletResponse response, @PathVariable String fileName);
+	void download(HttpServletResponse response, @PathVariable String fileName);
 
 }
