@@ -18,12 +18,12 @@ public interface FormatService extends IService<Format> {
      * 读取所有的输出格式
      * @return 输出格式列表
      */
-    List<Format> listAllOutputFormat();
+    List<String> listAllOutputFormat();
 
     /**
      * 通过输出格式获取输入格式
      * @param outputFormat 输出格式
      * @return 输入格式列表
      */
-    List<Format> listInputFormatByOutputFormat(String outputFormat);
+    List<String> listInputFormatByOutputFormat(String outputFormat);
 }

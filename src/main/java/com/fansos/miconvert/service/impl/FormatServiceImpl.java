@@ -7,7 +7,11 @@ import com.fansos.miconvert.model.pojo.Format;
 import com.fansos.miconvert.service.FormatService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class FormatServiceImpl extends ServiceImpl<FormatMapper, Format> implements FormatService {
@@ -25,15 +29,25 @@ public class FormatServiceImpl extends ServiceImpl<FormatMapper, Format> impleme
     }
 
     @Override
-    public List<Format> listAllOutputFormat() {
-        return baseMapper.selectList(null);
+    public List<String> listAllOutputFormat() {
+        List<Format> list = baseMapper.selectList(null);
+        Set<String> set = new HashSet<>();
+        list.forEach(a->set.add(a.getOutputFormat()));
+        List<String> answer = new ArrayList<>(set.size());
+        answer.addAll(set);
+        return answer;
     }
 
     @Override
-    public List<Format> listInputFormatByOutputFormat(String outputFormat) {
+    public List<String> listInputFormatByOutputFormat(String outputFormat) {
         QueryWrapper<Format> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("out_format", outputFormat);
-        return baseMapper.selectList(queryWrapper);
+        List<Format> list = baseMapper.selectList(queryWrapper);
+        Set<String> set = new HashSet<>();
+        list.forEach(a->set.add(a.getInputFormat()));
+        List<String> answer = new ArrayList<>(set.size());
+        answer.addAll(set);
+        return answer;
     }
 
 }

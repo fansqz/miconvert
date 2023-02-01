@@ -59,9 +59,9 @@ public class ConvertController {
             return Result.fail(ResultCodeEnum.CUSTOM_SIMPLE_ERROR_MESSAGE);
         }
 
-        String url = convertService.upload(file, toFormat);
+        String fileName = convertService.upload(file, toFormat);
 
-        return Result.ok(url);
+        return Result.ok(fileName);
     }
 
 

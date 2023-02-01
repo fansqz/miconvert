@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fansos.miconvert.constant.ResultCodeEnum;
 import com.fansos.miconvert.model.pojo.UserInfo;
 import com.fansos.miconvert.model.result.Result;
-import com.fansos.miconvert.service.SystemService;
+import com.fansos.miconvert.service.UserService;
 import com.fansos.miconvert.utils.CreateVerifiCodeImage;
 import com.fansos.miconvert.utils.JwtHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 public class UserController {
 
 	@Autowired
-	private SystemService systemService;
+	private UserService systemService;
 
 	@Resource
 	private RedisTemplate redisTemplate;
@@ -49,7 +49,7 @@ public class UserController {
 	 * @return
 	 */
 	@PostMapping("/register")
-	public Result register(@RequestParam("username") String userName,
+	public Result<?> register(@RequestParam("username") String userName,
 	                       @RequestParam("password") String password,
 	                       @RequestParam("email") String email) {
 		// Todo 邮箱验证
@@ -75,7 +75,7 @@ public class UserController {
 	}
 
 	@PostMapping("/login")
-	public Result login(@RequestBody UserInfo loginInfo, HttpServletRequest request) {
+	public Result<?> login(@RequestBody UserInfo loginInfo, HttpServletRequest request) {
 
 		//验证码校验
 		//返回与该请求关联的当前 session 会话，或者如果请求没有 session 会话，则创建一个。
@@ -144,7 +144,7 @@ public class UserController {
 	 * @return
 	 */
 	@PostMapping("/updatePwd/{oldPwd}/{newPwd}")
-	public Result updatePwd(@RequestHeader("token") String token,
+	public Result<?> updatePwd(@RequestHeader("token") String token,
 	                        @PathVariable("oldPwd") String oldPwd,
 	                        @PathVariable("newPwd") String newPwd) {
 		boolean isvalid = JwtHelper.isExpiration(token);
@@ -179,7 +179,7 @@ public class UserController {
 	 * @return
 	 */
 	@GetMapping("/getInfo")
-	public Result getInfoByToken(@RequestHeader("token") String token) {
+	public Result<?> getInfoByToken(@RequestHeader("token") String token) {
 		// 判断token是否有效
 		boolean expiration = JwtHelper.isExpiration(token);
 

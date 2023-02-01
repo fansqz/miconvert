@@ -39,7 +39,7 @@ public class ConvertServiceImpl implements ConvertService {
 	/**
 	 * 上传文件
 	 * @param file
-	 * @return
+	 * @return 文件名称
 	 */
 	@Override
 	public String upload(MultipartFile file, String toFormat) {
@@ -75,8 +75,7 @@ public class ConvertServiceImpl implements ConvertService {
 				thread.start();
 				log.info("定时删除文件线程启动.........");
 			}
-			log.info("localhost:8080/convert/downloadFile/" + preffix + "." + toFormat);
-			return "localhost:8080/convert/downloadFile/" + preffix + "." + toFormat;
+			return preffix + "." + toFormat;
 			// return Result.ok();
 		} catch (java.io.IOException e) {
 			e.printStackTrace();

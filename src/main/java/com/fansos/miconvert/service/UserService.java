@@ -7,7 +7,7 @@ import com.fansos.miconvert.model.pojo.UserInfo;
  * @author Diligence
  * @create 2022 - 10 - 23 20:45
  */
-public interface SystemService extends IService<UserInfo> {
+public interface UserService extends IService<UserInfo> {
 	/**
 	 * 查询数据库，获取用户
 	 * @param userName
