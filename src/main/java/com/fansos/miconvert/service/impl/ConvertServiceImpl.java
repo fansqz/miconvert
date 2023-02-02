@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -43,12 +44,15 @@ public class ConvertServiceImpl implements ConvertService {
 	 */
 	@Override
 	public String upload(MultipartFile file, String toFormat) {
-		String fileName = file.getOriginalFilename();
+		// 读取oldFormat
+		int t = Objects.requireNonNull(file.getOriginalFilename()).lastIndexOf(".");
+		String suffix = "";
+		if (t != -1) {
+			suffix = file.getOriginalFilename().substring(t + 1);
+		}
 		//生成随机唯一值，使用uuid，添加到文件名称里面
-		String uuid = UUID.randomUUID().toString().replaceAll("-", "") + "_";
-		fileName = uuid + fileName;
-		String suffix = fileName.split("\\.")[1];
-		String preffix = fileName.split("\\.")[0];
+		String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+		String fileName = uuid + '.' + suffix;
 		//获取项目运行的绝对路径，统一用 "/"
 		String filePath = System.getProperty("user.dir");
 		String newFilePath = filePath + "/demo-upload/";
@@ -75,7 +79,8 @@ public class ConvertServiceImpl implements ConvertService {
 				thread.start();
 				log.info("定时删除文件线程启动.........");
 			}
-			return preffix + "." + toFormat;
+			// 读取新文件名
+			return uuid + "." + toFormat;
 			// return Result.ok();
 		} catch (java.io.IOException e) {
 			e.printStackTrace();
@@ -107,12 +112,8 @@ public class ConvertServiceImpl implements ConvertService {
 		response.setContentType("application/" + fileSuffix);
 
 		//添加http头信息
-		try {
-			response.addHeader("Content-Disposition", "attachment;filename="
-					+ new String(fileName.split("_")[1].getBytes("UTF-8"), "ISO8859-1"));
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
+		response.addHeader("Content-Disposition", "attachment;filename="
+					+ fileName);
 
 		//使用  Path 和response输出流将文件输出到浏览器
 		try {
