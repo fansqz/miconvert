@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * 游客相关的转换的Controller
@@ -46,12 +47,21 @@ public class ConvertController {
     }
 
     /**
+     * 尝试秒传
+     * @param key 原文件的16进制md5
+     */
+    @PostMapping("/fastConvertFile")
+    public Result<?> uploadFile(@RequestParam("key") String key, @RequestParam("format") String format) throws IOException {
+        return Result.ok(convertService.fastConvert(key, format));
+    }
+
+    /**
      * 上传文件
      * @param file 文件
      * @return 成功信息
      */
     @PostMapping("/convertFile")
-    public Result<?> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("outputFormat") String toFormat) {
+    public Result<?> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("outputFormat") String toFormat) throws IOException {
         if (file.isEmpty()) {
             return Result.fail(ResultCodeEnum.CUSTOM_SIMPLE_ERROR_MESSAGE);
         }
@@ -59,11 +69,10 @@ public class ConvertController {
             return Result.fail(ResultCodeEnum.CUSTOM_SIMPLE_ERROR_MESSAGE);
         }
 
-        String fileName = convertService.upload(file, toFormat);
+        String fileName = convertService.convert(file, toFormat);
 
         return Result.ok(fileName);
     }
-
 
     /**
      * 文件下载

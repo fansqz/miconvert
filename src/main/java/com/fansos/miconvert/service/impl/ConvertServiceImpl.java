@@ -2,15 +2,18 @@ package com.fansos.miconvert.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fansos.miconvert.constant.RedisConstant;
 import com.fansos.miconvert.mapper.FormatMapper;
 import com.fansos.miconvert.model.pojo.Format;
 import com.fansos.miconvert.service.ConvertService;
 import com.fansos.miconvert.service.FormatService;
 import com.fansos.miconvert.utils.ConstantPropertiesUtil;
 import com.fansos.miconvert.utils.ConvertUtil;
+import com.fansos.miconvert.utils.MD5Util;
 import com.fansos.miconvert.utils.TimingDelUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,13 +40,12 @@ public class ConvertServiceImpl implements ConvertService {
 
 	@Autowired
 	private FormatService formatService;
-	/**
-	 * 上传文件
-	 * @param file
-	 * @return 文件名称
-	 */
+
+	@Autowired
+	private RedisTemplate<String, String> redisTemplate;
+
 	@Override
-	public String upload(MultipartFile file, String toFormat) {
+	public String convert(MultipartFile file, String outputFormat) throws IOException {
 		// 读取oldFormat
 		int t = Objects.requireNonNull(file.getOriginalFilename()).lastIndexOf(".");
 		String suffix = "";
@@ -52,27 +54,39 @@ public class ConvertServiceImpl implements ConvertService {
 		}
 		//生成随机唯一值，使用uuid，添加到文件名称里面
 		String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-		String fileName = uuid + '.' + suffix;
+		String oldFileName = uuid + '.' + suffix;
+		String newFileName = uuid + '.' + outputFormat;
 		//获取项目运行的绝对路径，统一用 "/"
-		String filePath = System.getProperty("user.dir");
-		String newFilePath = filePath + "/demo-upload/";
-		File file1 = new File(newFilePath);
+		String filePath = System.getProperty("user.dir") + "/demo-upload/";
+		File file1 = new File(filePath);
 		if (!file1.exists()) {
 			file1.mkdirs();
 		}
 
-		try (FileOutputStream fileOutputStream = new FileOutputStream(newFilePath + fileName)){
+		try (FileOutputStream fileOutputStream = new FileOutputStream(filePath + oldFileName)){
+			// 上传文件
 			fileOutputStream.write(file.getBytes());
 			fileOutputStream.flush();
 			fileOutputStream.close();
+			// 写入redis中
+			String oldFileMD5 = MD5Util.getFileMD5String(new File(filePath + oldFileName));
+			redisTemplate.opsForValue().set(RedisConstant.FILE_PREFIX + oldFileMD5, oldFileName);
 			//转换
 			try {
 			    //通过数据库获取工具的选择方案
 				if (suffix.equals("pdf")) {
-					ConvertUtil.pdf2docxConvert(newFilePath, toFormat);
+					ConvertUtil.pdf2docxConvert(filePath + oldFileName, outputFormat);
 				} else {
-					ConvertUtil.sofficeConvert(newFilePath + fileName, toFormat, newFilePath);
+					ConvertUtil.sofficeConvert(filePath + oldFileName, outputFormat, filePath);
 				}
+				// 校验是否解析成功
+				File newFile = new File(filePath + newFileName);
+				if (!newFile.exists()) {
+					throw new RuntimeException("解析失败");
+				}
+				//解析成功
+				String outputFileMD5 = MD5Util.getFileMD5String(newFile);
+				redisTemplate.opsForValue().set(RedisConstant.FILE_PREFIX + outputFileMD5, newFileName);
 			} finally {
 				Runnable runnable = new TimingDelUtil();
 				Thread thread = new Thread(runnable);
@@ -80,12 +94,51 @@ public class ConvertServiceImpl implements ConvertService {
 				log.info("定时删除文件线程启动.........");
 			}
 			// 读取新文件名
-			return uuid + "." + toFormat;
+			return uuid + "." + outputFormat;
 			// return Result.ok();
-		} catch (java.io.IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
+			throw e;
 		}
-		return "";
+	}
+
+	@Override
+	public String fastConvert(String key, String outputFormat) throws IOException {
+		// 1.检验是否原文件存在
+		String oldFileName = redisTemplate.opsForValue().get(key);
+		if (Objects.isNull(oldFileName)) {
+			throw new RuntimeException("重新上传");
+		}
+		String newFileName = "";
+		if (oldFileName.lastIndexOf('.') == -1) {
+			newFileName = oldFileName + '.' + outputFormat;
+		} else {
+			newFileName = oldFileName.substring(0, oldFileName.lastIndexOf('.') + 1) + outputFormat;
+		}
+		// 2. 检验转换以后文件是否存在
+		String filePath = System.getProperty("user.dir") + "/demo-upload/";
+		File newFile = new File(filePath + newFileName);
+		// 目标文件存在，直接返回文件名称
+		if (newFile.exists()) {
+			return newFileName;
+		}
+		// 不存在需要解析并返回
+
+		// 通过数据库获取工具的选择方案
+		String suffix = oldFileName.substring(oldFileName.lastIndexOf('.') + 1);
+		if (suffix.equals("pdf")) {
+			ConvertUtil.pdf2docxConvert(filePath + oldFileName, outputFormat);
+		} else {
+			ConvertUtil.sofficeConvert(filePath + oldFileName, outputFormat, filePath);
+		}
+		// 校验是否解析成功
+		if (!newFile.exists()) {
+			throw new RuntimeException("解析失败");
+		}
+		//解析成功
+		String outputFileMD5 = MD5Util.getFileMD5String(newFile);
+		redisTemplate.opsForValue().set(RedisConstant.FILE_PREFIX + outputFileMD5, newFileName);
+		return newFileName;
 	}
 
 	/**
