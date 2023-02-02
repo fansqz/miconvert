@@ -3,6 +3,9 @@ package com.fansos.miconvert.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fansos.miconvert.constant.RedisConstant;
+import com.fansos.miconvert.exception.ConvertFalseException;
+import com.fansos.miconvert.exception.FastConvertFalseException;
+import com.fansos.miconvert.exception.ServerErrorException;
 import com.fansos.miconvert.mapper.FormatMapper;
 import com.fansos.miconvert.model.pojo.Format;
 import com.fansos.miconvert.service.ConvertService;
@@ -15,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +27,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.ConnectException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -82,7 +87,7 @@ public class ConvertServiceImpl implements ConvertService {
 				// 校验是否解析成功
 				File newFile = new File(filePath + newFileName);
 				if (!newFile.exists()) {
-					throw new RuntimeException("解析失败");
+					throw new ConnectException();
 				}
 				//解析成功
 				String outputFileMD5 = MD5Util.getFileMD5String(newFile);
@@ -98,7 +103,7 @@ public class ConvertServiceImpl implements ConvertService {
 			// return Result.ok();
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw e;
+			throw new ServerErrorException("文件读取异常");
 		}
 	}
 
@@ -107,7 +112,7 @@ public class ConvertServiceImpl implements ConvertService {
 		// 1.检验是否原文件存在
 		String oldFileName = redisTemplate.opsForValue().get(key);
 		if (Objects.isNull(oldFileName)) {
-			throw new RuntimeException("重新上传");
+			throw new FastConvertFalseException();
 		}
 		String newFileName = "";
 		if (oldFileName.lastIndexOf('.') == -1) {
@@ -133,7 +138,7 @@ public class ConvertServiceImpl implements ConvertService {
 		}
 		// 校验是否解析成功
 		if (!newFile.exists()) {
-			throw new RuntimeException("解析失败");
+			throw new ConvertFalseException();
 		}
 		//解析成功
 		String outputFileMD5 = MD5Util.getFileMD5String(newFile);
@@ -143,9 +148,6 @@ public class ConvertServiceImpl implements ConvertService {
 
 	/**
 	 * 下载目标文件
-	 * @param response
-	 * @param fileName
-	 * @return
 	 */
 	@Override
 	public void download(HttpServletResponse response, String fileName) {
@@ -158,7 +160,7 @@ public class ConvertServiceImpl implements ConvertService {
 		Path path = Paths.get(newFilePath, fileName);
 
 		if (!Files.exists(path)) {
-			throw new RuntimeException("文件不存在");
+			throw new ServerErrorException("文件不存在");
 		}
 		//获取文件的后缀名
 		String fileSuffix = fileName.substring(fileName.lastIndexOf(".") + 1);

@@ -9,7 +9,8 @@ public enum ResultCodeEnum {
     FAIL(201, "失败"),
     ERROR(500, "服务器错误"),
     TOKEN_ERROR(205, "token错误"),
-    FAST_CONVERT_FALSE(4001, "快速解析失败");
+    FAST_CONVERT_FAIL(4001, "快速解析失败"),
+    CONVERT_FAIL(4002,"文件解析失败");
 
 
 
