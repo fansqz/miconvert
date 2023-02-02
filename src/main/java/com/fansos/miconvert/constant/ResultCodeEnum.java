@@ -8,7 +8,9 @@ public enum ResultCodeEnum {
     SUCCESS(200, "响应成功"),
     FAIL(201, "失败"),
     ERROR(500, "服务器错误"),
-    TOKEN_ERROR(205, "token错误");
+    TOKEN_ERROR(205, "token错误"),
+
+    FAST_CONVERT_FALSE(4001, "快速解析失败");
 
 
 
